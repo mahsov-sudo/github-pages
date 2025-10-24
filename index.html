@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaClone - Делитесь моментами</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #fafafa;
+            color: #262626;
+        }
+
+        /* Навигация */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            border-bottom: 1px solid #dbdbdb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-content {
+            width: 100%;
+            max-width: 975px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-family: 'Cookie', cursive;
+            font-size: 24px;
+            font-weight: normal;
+            text-decoration: none;
+            color: #262626;
+        }
+
+        .search-input {
+            background: #fafafa;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            padding: 5px 10px;
+            text-align: center;
+            width: 215px;
+            font-size: 14px;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 22px;
+        }
+
+        .nav-icons i {
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        /* Основной контент */
+        .container {
+            max-width: 975px;
+            margin: 80px auto 30px;
+            padding: 0 20px;
+        }
+
+        /* Профиль */
+        .profile {
+            display: flex;
+            margin-bottom: 44px;
+        }
+
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-right: 100px;
+            object-fit: cover;
+            border: 1px solid #dbdbdb;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .username {
+            font-size: 28px;
+            font-weight: 300;
+            margin-right: 20px;
+        }
+
+        .profile-stats {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            margin-right: 40px;
+        }
+
+        .stat-count {
+            font-weight: 600;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid #dbdbdb;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            margin: 0 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #8e8e8e;
+            cursor: pointer;
+            border-top: 1px solid transparent;
+            margin-top: -1px;
+        }
+
+        .tab.active {
+            color: #262626;
+            border-top-color: #262626;
+        }
+
+        .tab i {
+            margin-right: 6px;
+            font-size: 12px;
+        }
+
+        /* Галерея */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+
+        .gallery-item {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* Квадратное соотношение */
+            background-color: #efefef;
+            cursor: pointer;
+        }
+
+        .gallery-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-stats {
+            display: flex;
+            color: white;
+            font-weight: 600;
+        }
+
+        .gallery-stat {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+
+        .gallery-stat i {
+            margin-right: 5px;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            max-width: 935px;
+            width: 100%;
+            max-height: 600px;
+            display: flex;
+        }
+
+        .modal-image {
+            flex: 1.5;
+            background-color: #000;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #efefef;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 14px;
+        }
+
+        .modal-username {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .modal-comments {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .comment {
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 14px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+        }
+
+        .comment-username {
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .modal-actions {
+            padding: 16px;
+            border-top: 1px solid #efefef;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .action-icons i {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .likes-count {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .post-time {
+            color: #8e8e8e;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .comment-form {
+            display: flex;
+            margin-top: 16px;
+        }
+
+        .comment-input {
+            flex: 1;
+            border: none;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .comment-submit {
+            background: none;
+            border: none;
+            color: #0095f6;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Кнопка */
+        .btn {
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 9px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: none;
+            border: 1px solid #dbdbdb;
+            color: #262626;
+        }
+
+        /* Иконки */
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+        @import url('https://fonts.googleapis.com/css2?family=Cookie&display=swap');
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="#" class="logo">InstaClone</a>
+            <input type="text" class="search-input" placeholder="Поиск">
+            <div class="nav-icons">
+                <i class="fas fa-home"></i>
+                <i class="far fa-paper-plane"></i>
+                <i class="far fa-compass"></i>
+                <i class="far fa-heart"></i>
+                <i class="far fa-user"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <!-- Профиль -->
+        <section class="profile">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Аватар" class="profile-pic">
+            <div class="profile-info">
+                <div class="profile-header">
+                    <h1 class="username">username</h1>
+                    <button class="btn">Редактировать профиль</button>
+                    <i class="fas fa-cog" style="margin-left: 10px; font-size: 24px;"></i>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-count">125</span> публикаций
+                    </div>
+                    <div class="stat">
+                        <span class="stat-count">1,254</span> подписчиков
+                    </div>
+                    <div class="stat">
+                        <span class="stat-count">567</span> подписок
+                    </div>
+                </div>
+                <div class="profile-bio">
+                    <p class="profile-name">Имя Фамилия</p>
+                    <p>Описание профиля. Здесь можно рассказать о себе, своих увлечениях и поделиться чем-то интересным.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Вкладки -->
+        <section class="tabs">
+            <div class="tab active">
+                <i class="fas fa-th"></i> ПУБЛИКАЦИИ
+            </div>
+            <div class="tab">
+                <i class="far fa-bookmark"></i> СОХРАНЕННОЕ
+            </div>
+            <div class="tab">
+                <i class="far fa-user"></i> ОТМЕТКИ
+            </div>
+        </section>
+
+        <!-- Галерея -->
+        <section class="gallery">
+            <!-- Пост 1 -->
+            <div class="gallery-item" onclick="openModal(0)">
+                <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Горы" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-stats">
+                        <div class="gallery-stat">
+                            <i class="fas fa-heart"></i> 245
+                        </div>
+                        <div class="gallery-stat">
+                            <i class="fas fa-comment"></i> 32
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Пост 2 -->
+            <div class="gallery-item" onclick="openModal(1)">
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Пляж" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-stats">
+                        <div class="gallery-stat">
+                            <i class="fas fa-heart"></i> 189
+                        </div>
+                        <div class="gallery-stat">
+                            <i class="fas fa-comment"></i> 21
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Пост 3 -->
+            <div class="gallery-item" onclick="openModal(2)">
+                <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Город" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-stats">
+                        <div class="gallery-stat">
+                            <i class="fas fa-heart"></i> 312
+                        </div>
+                        <div class="gallery-stat">
+                            <i class="fas fa-comment"></i> 45
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Пост 4 -->
+            <div class="gallery-item" onclick="openModal(3)">
+                <img src="https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Еда" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-stats">
+                        <div class="gallery-stat">
+                            <i class="fas fa-heart"></i> 421
+                        </div>
+                        <div class="gallery-stat">
+                            <i class="fas fa-comment"></i> 67
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Пост 5 -->
+            <div class="gallery-item" onclick="openModal(4)">
+                <img src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Архитектура" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-stats">
+                        <div class="gallery-stat">
+                            <i class="fas fa-heart"></i> 278
+                        </div>
+                        <div class="gallery-stat">
+                            <i class="fas fa-comment"></i> 38
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Пост 6 -->
+            <div class="gallery-item" onclick="openModal(5)">
+                <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Природа" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-stats">
+                        <div class="gallery-stat">
+                            <i class="fas fa-heart"></i> 356
+                        </div>
+                        <div class="gallery-stat">
+                            <i class="fas fa-comment"></i> 52
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Модальное окно для поста -->
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <div class="modal-image">
+                <img id="modalImage" src="" alt="Пост">
+            </div>
+            <div class="modal-sidebar">
+                <div class="modal-header">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Аватар" class="modal-avatar">
+                    <span class="modal-username">username</span>
+                </div>
+                <div class="modal-comments">
+                    <div class="comment">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Аватар" class="comment-avatar">
+                        <div class="comment-text">
+                            <span class="comment-username">username</span>
+                            Прекрасное фото! Где это было сделано?
+                        </div>
+                    </div>
+                    <div class="comment">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Аватар" class="comment-avatar">
+                        <div class="comment-text">
+                            <span class="comment-username">user2</span>
+                            Очень красиво! ❤️
+                        </div>
+                    </div>
+                    <div class="comment">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Аватар" class="comment-avatar">
+                        <div class="comment-text">
+                            <span class="comment-username">user3</span>
+                            Отличный кадр!
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <div class="action-icons">
+                        <i class="far fa-heart"></i>
+                        <i class="far fa-comment"></i>
+                        <i class="far fa-paper-plane"></i>
+                        <i class="far fa-bookmark" style="margin-left: auto;"></i>
+                    </div>
+                    <div class="likes-count">Нравится: 245 пользователям</div>
+                    <div class="post-time">1 ДЕНЬ НАЗАД</div>
+                    <form class="comment-form">
+                        <input type="text" class="comment-input" placeholder="Добавьте комментарий...">
+                        <button type="submit" class="comment-submit">Опубликовать</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal-close" onclick="closeModal()">&times;</div>
+    </div>
+
+    <script>
+        // Данные постов
+        const posts = [
+            {
+                image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                likes: 245,
+                comments: 32
+            },
+            {
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                likes: 189,
+                comments: 21
+            },
+            {
+                image: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                likes: 312,
+                comments: 45
+            },
+            {
+                image: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                likes: 421,
+                comments: 67
+            },
+            {
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                likes: 278,
+                comments: 38
+            },
+            {
+                image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                likes: 356,
+                comments: 52
+            }
+        ];
+
+        // Открытие модального окна
+        function openModal(postIndex) {
+            const modal = document.getElementById('postModal');
+            const modalImage = document.getElementById('modalImage');
+            
+            modalImage.src = posts[postIndex].image;
+            modal.style.display = 'flex';
+            
+            // Обновляем количество лайков
+            document.querySelector('.likes-count').textContent = `Нравится: ${posts[postIndex].likes} пользователям`;
+        }
+
+        // Закрытие модального окна
+        function closeModal() {
+            const modal = document.getElementById('postModal');
+            modal.style.display = 'none';
+        }
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('postModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Обработка отправки комментария
+        document.querySelector('.comment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = this.querySelector('.comment-input');
+            const commentText = input.value.trim();
+            
+            if (commentText) {
+                const commentsContainer = document.querySelector('.modal-comments');
+                
+                const newComment = document.createElement('div');
+                newComment.className = 'comment';
+                
+                newComment.innerHTML = `
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Аватар" class="comment-avatar">
+                    <div class="comment-text">
+                        <span class="comment-username">username</span>
+                        ${commentText}
+                    </div>
+                `;
+                
+                commentsContainer.appendChild(newComment);
+                input.value = '';
+                
+                // Прокрутка к новому комментарию
+                commentsContainer.scrollTop = commentsContainer.scrollHeight;
+            }
+        });
+
+        // Переключение вкладок
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
